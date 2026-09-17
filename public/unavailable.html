@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MusiFun — Temporarily unavailable</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0908;
+    --ink: #ece4d3;
+    --muted: #867e6d;
+    --hairline: rgba(122,163,224,0.28);
+    --navy1: #16233f;
+    --navy2: #3a5a9c;
+    --navy3: #7fa3e0;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Cormorant Garamond', serif;
+  }
+  body {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 48px 24px;
+  }
+  .card {
+    max-width: 520px;
+    width: 100%;
+    text-align: center;
+  }
+  .brand {
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 900;
+    font-size: 30px;
+    background: linear-gradient(120deg, var(--navy1), var(--navy2), var(--navy3));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 28px;
+  }
+  h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 1.35;
+    margin: 0 0 20px;
+  }
+  p { font-size: 19px; line-height: 1.6; color: var(--muted); margin: 0 0 8px; }
+  hr { border: none; border-top: 1px solid var(--hairline); margin: 30px 0; }
+
+  .countdown {
+    display: inline-block;
+    margin: 6px 0 4px;
+    padding: 14px 28px;
+    border: 1px solid var(--hairline);
+  }
+  .countdown .num {
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 700;
+    font-size: 36px;
+    background: linear-gradient(120deg, var(--navy1), var(--navy2), var(--navy3));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: block;
+  }
+  .countdown .label { font-size: 15px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+
+  .field-label {
+    display: block;
+    font-size: 14px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: left;
+    margin-bottom: 6px;
+  }
+  .field { margin-bottom: 18px; }
+  textarea, input {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--hairline);
+    color: var(--ink);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    padding: 12px 14px;
+  }
+  textarea { min-height: 72px; resize: vertical; }
+  select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--hairline);
+    color: var(--ink);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    padding: 12px 14px;
+  }
+
+  .cta {
+    display: block;
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--navy3);
+    color: var(--ink);
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 15px;
+    letter-spacing: .05em;
+    padding: 16px 20px;
+    cursor: pointer;
+    margin-top: 6px;
+  }
+  .cta:hover { background: rgba(127,163,224,0.1); }
+  .cta:disabled { opacity: .5; cursor: not-allowed; }
+
+  #scheduleForm { text-align: left; margin-top: 22px; display: none; }
+  #toggleForm {
+    background: none;
+    border: none;
+    color: var(--navy3);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+  }
+  .note { font-size: 15px; color: var(--muted); margin-top: 14px; }
+  .error-text { color: #b5544a; font-size: 15px; margin-top: 10px; display: none; }
+  .success-block { display: none; margin-top: 20px; }
+  .success-block .check {
+    font-size: 32px;
+    color: var(--navy3);
+    margin-bottom: 8px;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">Musi<span>Fun</span></div>
+    <h1>We're taking a short break</h1>
+    <p>MusiFun is temporarily unavailable while the person behind it is focused on exams.</p>
+
+    <div class="countdown" id="countdownBox">
+      <span class="num" id="daysLeftNum">—</span>
+      <span class="label">days until we're back</span>
+    </div>
+
+    <p class="note" id="delayNote" style="display:none;"></p>
+
+    <hr>
+
+    <button id="toggleForm" onclick="showForm()">Place a scheduled order for when we're back →</button>
+
+    <div id="scheduleForm">
+      <p style="margin-bottom:18px;">Describe your track now — we'll start on it the moment MusiFun reopens.</p>
+
+      <div class="field">
+        <label class="field-label">Text prompt</label>
+        <textarea id="prompt" maxlength="240" placeholder="e.g. A dreamy lo-fi beat with vinyl crackle and soft rain"></textarea>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Genre</label>
+        <select id="genre"></select>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Duration (seconds)</label>
+        <input type="number" id="duration" min="15" max="180" value="60">
+      </div>
+
+      <div class="field">
+        <label class="field-label">Your email</label>
+        <input type="email" id="email" placeholder="you@example.com">
+      </div>
+
+      <button class="cta" id="submitBtn" onclick="submitScheduledOrder()">Send scheduled order</button>
+      <div class="error-text" id="errorText"></div>
+    </div>
+
+    <div class="success-block" id="successBlock">
+      <div class="check">✓</div>
+      <p style="color:var(--ink);">Order received — we'll start on it as soon as we're back, and email your finished track once it's ready.</p>
+    </div>
+  </div>
+
+<script>
+  const GENRES = ['Lo-fi','EDM','Hip-Hop','Cinematic','Ambient','Trap','Pop','Rock','Jazz'];
+  const genreSelect = document.getElementById('genre');
+  GENRES.forEach((g) => {
+    const opt = document.createElement('option');
+    opt.value = g;
+    opt.textContent = g;
+    genreSelect.appendChild(opt);
+  });
+
+  fetch('/api/availability')
+    .then((r) => r.json())
+    .then((data) => {
+      if (data.closed && typeof data.daysLeft === 'number') {
+        document.getElementById('daysLeftNum').textContent = data.daysLeft;
+
+        if (Array.isArray(data.closedMonths) && data.closedMonths.length) {
+          const monthList = data.closedMonths.join(', ');
+          document.getElementById('delayNote').textContent =
+            `Your product might be delayed near the start and end of these month ranges: ${monthList}.`;
+          document.getElementById('delayNote').style.display = 'block';
+        }
+      } else {
+        document.getElementById('countdownBox').style.display = 'none';
+      }
+    })
+    .catch(() => {
+      document.getElementById('countdownBox').style.display = 'none';
+    });
+
+  function showForm() {
+    document.getElementById('scheduleForm').style.display = 'block';
+    document.getElementById('toggleForm').style.display = 'none';
+  }
+
+  async function submitScheduledOrder() {
+    const prompt = document.getElementById('prompt').value;
+    const genre = document.getElementById('genre').value;
+    const durationSeconds = parseInt(document.getElementById('duration').value, 10);
+    const customerEmail = document.getElementById('email').value.trim();
+    const errEl = document.getElementById('errorText');
+    errEl.style.display = 'none';
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)) {
+      errEl.textContent = 'Enter a valid email address.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+
+    try {
+      const res = await fetch('/api/scheduled-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, genre, durationSeconds, engine: 'assistant', customerEmail })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Could not send your order.');
+
+      document.getElementById('scheduleForm').style.display = 'none';
+      document.getElementById('successBlock').style.display = 'block';
+    } catch (err) {
+      errEl.textContent = err.message;
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Send scheduled order';
+    }
+  }
+</script>
+</body>
+</html>
