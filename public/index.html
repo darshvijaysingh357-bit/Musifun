@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MusiFun — Beats &amp; Music Generation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-nav">
+  <div class="brand gradient-text">Musi<span>Fun</span></div>
+  <nav class="tabs">
+    <button data-view="home" class="active">Home</button>
+    <button data-view="create">Create</button>
+    <button data-view="generate">Generate</button>
+    <button data-view="payment">Payment</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ============ HOME ============ -->
+  <section class="view active" id="view-home">
+    <div class="hero">
+      <h1 class="display gradient-text">Music, composed for you</h1>
+      <p class="subtitle">Describe it. Choose a genre. Choose a length. Let it play.</p>
+
+      <svg class="wave-signature" viewBox="0 0 420 60" preserveAspectRatio="none">
+        <path d="M0,30 C40,5 80,55 120,30 C160,5 200,55 240,30 C280,5 320,55 360,30 C380,18 400,42 420,30" />
+      </svg>
+
+      <div class="cta" onclick="goView('create')">Begin</div>
+    </div>
+
+    <div class="intro-list">
+      <div class="intro-item">
+        <div class="num display">I.</div>
+        <div>
+          <h3>Describe the sound</h3>
+          <p>Write what you hear in your head — the mood, the instruments, the feeling.</p>
+        </div>
+      </div>
+      <div class="intro-item">
+        <div class="num display">II.</div>
+        <div>
+          <h3>Choose genre &amp; length</h3>
+          <p>Nine genres, from lo-fi to cinematic. Anywhere from a few seconds to three minutes.</p>
+        </div>
+      </div>
+      <div class="intro-item">
+        <div class="num display">III.</div>
+        <div>
+          <h3>Generate</h3>
+          <p>Have Lyria 3 compose it automatically, or have it made by hand and sent to your inbox.</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="engine-note">Two ways to create — automated with Lyria 3, or made personally through Your Assistant.</p>
+  </section>
+
+  <!-- ============ CREATE ============ -->
+  <section class="view" id="view-create">
+    <h1 class="display gradient-text" style="font-size:26px; margin-bottom:6px;">Describe your track</h1>
+    <p style="color:var(--muted); margin-bottom:36px;">This step is always free. Nothing is charged until you generate.</p>
+
+    <div class="field">
+      <label class="field-label">Text prompt</label>
+      <textarea id="promptInput" maxlength="240" placeholder="e.g. A dreamy lo-fi beat with vinyl crackle, mellow piano, and soft rain in the background"></textarea>
+      <div class="char-count"><span id="charCount">0</span>/240</div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Your region</label>
+      <div class="genre-list" id="continentList"></div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Genre</label>
+      <div class="genre-list" id="genreList"></div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Duration</label>
+      <div class="duration-value" id="durationLabel">60s</div>
+      <input type="range" id="durationSlider" min="15" max="180" step="15" value="60">
+      <div class="duration-marks"><span>15s</span><span>1 min</span><span>2 min</span><span>3 min</span></div>
+    </div>
+
+    <hr class="hairline">
+
+    <label class="field-label">Generation method</label>
+    <div class="engine-options">
+      <button class="engine-opt" disabled style="opacity:.45; cursor:not-allowed;">
+        <span class="e-title display">Lyria 3</span>
+        <span class="e-sub">Coming soon — automatic generation isn't available yet.</span>
+      </button>
+      <button class="engine-opt" onclick="startGeneration('assistant')">
+        <span class="e-title display">Your Assistant</span>
+        <span class="e-sub">Made personally and sent to your email once it's ready.</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============ GENERATE ============ -->
+  <section class="view" id="view-generate">
+    <h1 class="display gradient-text" style="font-size:26px; margin-bottom:30px;" id="generateHeading">Generation</h1>
+
+    <div id="chatbotBox" style="display:none;"></div>
+
+    <div class="status-block" id="genWaiting">
+      <p class="status-text">Set a prompt on the Create tab, then choose how it should be made.</p>
+    </div>
+
+    <div class="status-block" id="genLoading" style="display:none;">
+      <span class="status-dot"></span><span class="status-text" id="genStatusText">Composing…</span>
+      <div class="status-note">This calls Lyria 3 directly — it can take a moment.</div>
+    </div>
+
+    <div id="genError" class="error-text" style="display:none; text-align:center;"></div>
+
+    <div class="track-panel" id="genDone" style="display:none;">
+      <div class="track-title display" id="trackTitle">Untitled track</div>
+      <div class="track-meta" id="trackMeta">—</div>
+      <audio id="trackAudio" controls></audio>
+      <div class="track-actions">
+        <button class="cta ghost" onclick="goView('create')">Start again</button>
+        <button class="cta" onclick="goView('payment')">Continue to payment</button>
+      </div>
+    </div>
+
+    <!-- Your Assistant: email handoff -->
+    <div class="assistant-form" id="assistantForm" style="display:none;">
+      <p class="lead">Your assistant will make this track personally and email the finished file to you — nothing is auto-generated here.</p>
+      <div class="summary-row"><span>Prompt</span><span class="val" id="reqPrompt">—</span></div>
+      <div class="summary-row"><span>Genre</span><span class="val" id="reqGenre">—</span></div>
+      <div class="summary-row"><span>Duration</span><span class="val" id="reqDuration">—</span></div>
+
+      <div class="field" style="margin-top:24px; margin-bottom:16px;">
+        <label class="field-label">Your email</label>
+        <input type="email" id="assistantEmail" placeholder="you@example.com">
+      </div>
+      <button class="cta block" onclick="sendAssistantRequest()">Send request</button>
+      <div id="assistantError" class="error-text" style="display:none;"></div>
+    </div>
+
+    <div class="sent-panel" id="assistantSent" style="display:none;">
+      <div class="sent-check">✓</div>
+      <div class="track-title display">Request sent</div>
+      <p style="color:var(--muted); margin-top:8px;" id="assistantSentNote">You'll receive your track by email once it's ready.</p>
+      <button class="cta" style="margin-top:24px;" onclick="goView('payment')">Continue to payment</button>
+    </div>
+  </section>
+
+  <!-- ============ PAYMENT ============ -->
+  <section class="view" id="view-payment">
+    <h1 class="display gradient-text" style="font-size:26px; margin-bottom:30px;">Finalise &amp; pay</h1>
+
+    <div class="config-warning" id="stripeWarning" style="display:none;">
+      Payments aren't configured on this server yet — add your Razorpay keys in <code>.env</code> to accept real charges.
+    </div>
+
+    <div class="quote-panel">
+      <div class="summary-row"><span>Prompt</span><span class="val" id="sumPrompt">—</span></div>
+      <div class="summary-row"><span>Genre</span><span class="val" id="sumGenre">—</span></div>
+      <div class="summary-row"><span>Duration</span><span class="val" id="sumDuration">—</span></div>
+      <div class="summary-row"><span>Method</span><span class="val" id="sumEngine">—</span></div>
+      <div class="total-row">
+        <span>Total</span>
+        <span><span class="amt" id="sumTotalUSD">$0.00</span><span class="amt-inr" id="sumTotalINR">₹0</span></span>
+      </div>
+    </div>
+
+    <div id="paymentForm">
+      <div id="card-errors" class="error-text" style="display:block; min-height:20px; text-align:left; margin-top:0;"></div>
+      <button class="cta block" style="margin-top:6px;" id="payButton" onclick="submitPayment()">Pay now</button>
+      <div class="lock-note">🔒 You'll choose UPI, card, netbanking, or wallet on the next screen — processed securely by Razorpay.</div>
+    </div>
+
+    <div id="upiSection" style="display:none; margin-top:34px;">
+      <hr class="hairline" style="margin:0 0 26px;">
+      <label class="field-label">Pay directly via UPI</label>
+      <div class="quote-panel" style="margin-bottom:16px;">
+        <div class="summary-row"><span>Send to UPI ID</span><span class="val" id="upiIdText">—</span></div>
+        <div class="summary-row"><span>Amount</span><span class="val" id="upiAmountText">₹0</span></div>
+      </div>
+      <button class="cta ghost block" style="margin-bottom:14px;" onclick="copyUpiId()">Copy UPI ID</button>
+      <button class="cta block" id="upiClaimButton" onclick="claimUpiPayment()">I've paid</button>
+      <div id="upiError" class="error-text" style="display:none;"></div>
+      <div class="lock-note">Pay the exact amount via any UPI app, then tap "I've paid" — we'll verify and email your track once confirmed.</div>
+    </div>
+
+    <div class="pay-success" id="paySuccess" style="display:none;">
+      <div class="sent-check">✓</div>
+      <div class="track-title display">Payment confirmed</div>
+      <p style="color:var(--muted); margin-top:8px;" id="paySuccessNote"></p>
+
+      <div id="reviewSection" style="margin-top:34px; text-align:left;">
+        <hr class="hairline" style="margin:0 0 26px;">
+        <label class="field-label">Give your review on the track</label>
+        <div class="star-picker" id="starPicker">
+          <span class="star" data-value="1">★</span>
+          <span class="star" data-value="2">★</span>
+          <span class="star" data-value="3">★</span>
+          <span class="star" data-value="4">★</span>
+          <span class="star" data-value="5">★</span>
+        </div>
+        <div class="field" style="margin-top:16px;">
+          <textarea id="reviewComment" maxlength="500" placeholder="Optional — tell us what you thought"></textarea>
+        </div>
+        <button class="cta block" onclick="submitReview()">Submit review</button>
+        <div id="reviewError" class="error-text" style="display:none;"></div>
+      </div>
+
+      <div id="reviewThanks" style="display:none; margin-top:24px; text-align:center;">
+        <div class="sent-check">✓</div>
+        <p style="color:var(--muted); margin-top:8px;">Thanks for the feedback — it genuinely helps.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script src="chatbot-questions.js"></script>
+<script src="chatbot-flow.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
