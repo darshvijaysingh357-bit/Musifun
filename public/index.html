@@ -18,6 +18,7 @@
     <button data-view="create">Create</button>
     <button data-view="generate">Generate</button>
     <button data-view="payment">Payment</button>
+    <button data-view="join">Join us</button>
   </nav>
 </header>
 
@@ -220,6 +221,60 @@
         <div class="sent-check">✓</div>
         <p style="color:var(--muted); margin-top:8px;">Thanks for the feedback — it genuinely helps.</p>
       </div>
+    </div>
+  </section>
+
+  <!-- ============ JOIN US ============ -->
+  <section class="view" id="view-join">
+    <h1 class="display gradient-text" style="font-size:26px; margin-bottom:6px;">Join us</h1>
+    <p style="color:var(--muted); margin-bottom:36px;">Are you a musician, or do you work in music, and need a hand with your music? Tell us about it and we'll get back to you by email.</p>
+
+    <div id="joinFormBox">
+      <div class="field">
+        <label class="field-label" for="joinName">Your name</label>
+        <input type="text" id="joinName" maxlength="80" autocomplete="name" placeholder="Your name">
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="joinPhone">Contact number</label>
+        <input type="tel" id="joinPhone" maxlength="20" inputmode="tel" autocomplete="tel" placeholder="+91 98765 43210">
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="joinEmail">Your email address</label>
+        <input type="email" id="joinEmail" maxlength="120" autocomplete="email" placeholder="you@example.com">
+      </div>
+
+      <div class="field">
+        <label class="field-label">What do you do?</label>
+        <div class="genre-list" id="joinRoleList"></div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="joinHelp">What do you need help with?</label>
+        <textarea id="joinHelp" maxlength="600" placeholder="e.g. I have a melody but can't arrange it, or I need help mixing a track"></textarea>
+        <div class="char-count"><span id="joinHelpCount">0</span>/600</div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="joinLink">Link to your music (optional)</label>
+        <input type="text" id="joinLink" maxlength="200" inputmode="url" autocomplete="url" placeholder="https://">
+      </div>
+
+      <!-- Honeypot: hidden from people, bots tend to fill it in -->
+      <div class="hp-field" aria-hidden="true">
+        <label for="joinWebsite">Leave this empty</label>
+        <input type="text" id="joinWebsite" tabindex="-1" autocomplete="off">
+      </div>
+
+      <button class="cta block" id="joinSubmit" onclick="submitJoin()">Send</button>
+      <div id="joinError" class="error-text" style="display:none;"></div>
+    </div>
+
+    <div class="sent-panel" id="joinSent" style="display:none;">
+      <div class="sent-check">✓</div>
+      <div class="track-title display">Message sent</div>
+      <p style="color:var(--muted); margin-top:8px;">Thanks for reaching out — we'll email you soon.</p>
     </div>
   </section>
 
